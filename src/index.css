@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", Georgia, Cambria, serif;
+
+  /* Custom Sophisticated Dark shades */
+  --color-zinc-50: #f4f4f5;
+  --color-zinc-100: #e4e4e7;
+  --color-zinc-200: #d4d4d8;
+  --color-zinc-300: #a1a1aa;
+  --color-zinc-400: #71717a;
+  --color-zinc-500: #52525b;
+  --color-zinc-800: rgba(255, 255, 255, 0.09); /* Sophisticated Dark borders */
+  --color-zinc-850: rgba(255, 255, 255, 0.14); /* Dynamic brighter outline */
+  --color-zinc-900: #0a0a0a; /* Anthracite Slate */
+  --color-zinc-950: #050505; /* Pitch Dark */
+
+  /* Accent mapping of old Indigo to Glowing Cyber Cyan & Royal Developer tones */
+  --color-indigo-50: rgba(6, 182, 212, 0.08);
+  --color-indigo-100: #ecfeff;
+  --color-indigo-200: #cffafe;
+  --color-indigo-300: #a5f3fc;
+  --color-indigo-400: #22d3ee;
+  --color-indigo-500: #06b6d4;
+  --color-indigo-600: #0891b2;
+  --color-indigo-650: #06b6d4;
+  --color-indigo-700: #0e7490;
+  --color-indigo-850: rgba(6, 182, 212, 0.15);
+  --color-indigo-950: #081e24;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Premium sandboxed radial gradient backdrop matching mockup exactly */
+.sophisticated-gradient-bg {
+  background: radial-gradient(circle at 50% 50%, #151515 0%, #050505 100%);
+}
+
+/* Base resets & scrollbar enhancements */
+::selection {
+  background-color: #06b6d4;
+  color: #000000;
+}
+
+body {
+  background-color: #050505;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}

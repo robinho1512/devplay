@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net - Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Users Collection Rules
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId)
+                    && incoming().uid == userId
+                    && incoming().displayName is string
+                    && incoming().displayName.size() <= 100
+                    && incoming().level is number
+                    && incoming().xp is number
+                    && incoming().gold is number;
+                    
+      allow update: if isOwner(userId)
+                    && incoming().uid == userId
+                    && incoming().displayName is string
+                    && incoming().displayName.size() <= 100
+                    && incoming().level is number
+                    && incoming().xp is number
+                    && incoming().gold is number
+                    && incoming().hearts is number
+                    && incoming().streak is number;
+                    
+      allow delete: if isOwner(userId);
+    }
+
+    // 3. Duels Collection Rules
+    match /duels/{duelId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+                    && isValidId(duelId)
+                    && incoming().id == duelId
+                    && (incoming().challengerUid == request.auth.uid);
+                    
+      allow update: if isSignedIn()
+                    && (incoming().challengerUid == request.auth.uid || incoming().opponentUid == request.auth.uid);
+                    
+      allow delete: if isSignedIn() && existing().challengerUid == request.auth.uid;
+    }
+
+    // 4. Forum Posts Rules
+    match /forum/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+                    && isValidId(postId)
+                    && incoming().id == postId
+                    && incoming().authorUid == request.auth.uid
+                    && incoming().title is string
+                    && incoming().title.size() <= 200
+                    && incoming().content is string
+                    && incoming().content.size() <= 5000;
+                    
+      allow update: if isSignedIn()
+                    && (
+                      // Allow liking or replying by any signed-in user
+                      incoming().diff(existing()).affectedKeys().hasAny(['likes', 'likedBy', 'replies'])
+                      || existing().authorUid == request.auth.uid
+                    );
+                    
+      allow delete: if isSignedIn() && existing().authorUid == request.auth.uid;
+    }
+
+    // 5. Calendar Events Rules
+    match /calendar/{eventId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+                    && isValidId(eventId)
+                    && incoming().id == eventId
+                    && incoming().title is string
+                    && incoming().title.size() <= 100;
+                    
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+  }
+}

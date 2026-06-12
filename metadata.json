@@ -1,0 +1,6 @@
+{
+  "name": "DevLingo",
+  "description": "Uma plataforma gamificada no estilo Duolingo para aprender programação (HTML, JavaScript, Python) com conquistas, rankings competitivos, desafios rápidos, fórum comunitário, integração com GitHub e estatísticas de estudo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

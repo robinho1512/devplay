@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User ranking, study time, gold, streak and customizable options.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "githubUsername": { "type": "string" },
+        "level": { "type": "number" },
+        "xp": { "type": "number" },
+        "gold": { "type": "number" },
+        "hearts": { "type": "number" },
+        "streak": { "type": "number" },
+        "lastActiveDate": { "type": "string" },
+        "history": { "type": "object" },
+        "unlockedAchievements": { "type": "array" },
+        "completedExerciseIds": { "type": "array" },
+        "xpGoal": { "type": "number" },
+        "minutesGoal": { "type": "number" },
+        "isBiometricEnabled": { "type": "boolean" },
+        "is2faEnabled": { "type": "boolean" },
+        "appLanguage": { "type": "string" },
+        "theme": { "type": "string" }
+      },
+      "required": ["uid", "displayName", "level", "xp", "gold", "hearts"]
+    },
+    "Duel": {
+      "title": "Duel Challenge",
+      "description": "Rapid programming dual between friends.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "challengerUid": { "type": "string" },
+        "challengerName": { "type": "string" },
+        "opponentUid": { "type": "string" },
+        "opponentName": { "type": "string" },
+        "language": { "type": "string" },
+        "status": { "type": "string" },
+        "winnerUid": { "type": "string" },
+        "challengerAnswers": { "type": "object" },
+        "opponentAnswers": { "type": "object" },
+        "challengerScore": { "type": "number" },
+        "opponentScore": { "type": "number" },
+        "exerciseIds": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "challengerUid", "challengerName", "language", "status"]
+    },
+    "ForumPost": {
+      "title": "Forum Post",
+      "description": "A community discussion thread to resolve Q&A and share templates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "authorLevel": { "type": "number" },
+        "language": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "likes": { "type": "number" },
+        "likedBy": { "type": "array" },
+        "replies": { "type": "array" }
+      },
+      "required": ["id", "title", "content", "authorUid", "createdAt"]
+    },
+    "CalendarEvent": {
+      "title": "Calendar Event",
+      "description": "Personalized study reminder for coding.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "language": { "type": "string" }
+      },
+      "required": ["id", "title", "date", "time"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User settings and performance analytics."
+    },
+    "/duels/{duelId}": {
+      "schema": "Duel",
+      "description": "Active and finished battle matching objects."
+    },
+    "/forum/{postId}": {
+      "schema": "ForumPost",
+      "description": "Discussion threads for peer solutions."
+    },
+    "/calendar/{eventId}": {
+      "schema": "CalendarEvent",
+      "description": "Study appointments and deadlines."
+    }
+  }
+}
