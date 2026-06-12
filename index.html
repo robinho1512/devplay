@@ -3,11 +3,1666 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <title>Codelingo - Standalone Dev Learning Platform</title>
+
+    <!-- Tailwind CSS v4 CDN (Loaded dynamically in the browser as requested) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Google Fonts: Inter for UI, Playfair Display for Serifs, JetBrains Mono for data metrics -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+
+    <!-- Lucide Icons UMD Build -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- React 18 & ReactDOM 18 UMD Distributions -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+    <!-- Babel Standalone compiler to process JSX on-the-fly in the browser -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+      /* Smooth styles, animations, and custom theme overrides */
+      :root {
+        --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+        --font-serif: "Playfair Display", Georgia, Cambria, serif;
+      }
+
+      body {
+        background-color: #050505;
+        font-family: var(--font-sans);
+        margin: 0;
+        padding: 0;
+        color: #e4e4e7;
+        overflow-x: hidden;
+      }
+
+      /* Sophisticated Dark gradient backdrop matching high-fidelity layout specs */
+      .sophisticated-gradient-bg {
+        background: radial-gradient(circle at 60% 40%, #151515 0%, #050505 100%);
+      }
+
+      /* Custom scrollbar matching dark slate aesthetic */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 9999px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      /* Soft text glowing shadows */
+      .cyan-neon-glow {
+        text-shadow: 0 0 10px rgba(6, 182, 212, 0.35);
+      }
+
+      .cyan-border-glow:hover {
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        border-color: rgba(6, 182, 212, 0.4);
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(1rem);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .animate-slide-up {
+        animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      /* Hide components during printing, except the custom stats layout */
+      @media print {
+        header, aside, .friend-promo, button, form, input, select {
+          display: none !important;
+        }
+        main {
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .printable-report {
+          display: block !important;
+          color: #000000 !important;
+          background: #ffffff !important;
+        }
+      }
+    </style>
   </head>
-  <body>
+  <body class="sophisticated-gradient-bg min-h-screen">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- MAIN REACT APPLICATION IMPLEMENTATION -->
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useMemo } = React;
+
+      // ==========================================
+      // CONSTANTS & INITIAL DATA MIGRATED FROM DATA.TS
+      // ==========================================
+      const ProgrammingLanguage = {
+        HTML: 'HTML',
+        PYTHON: 'Python',
+        JAVASCRIPT: 'JavaScript'
+      };
+
+      const ExerciseType = {
+        MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+        FILL_IN_BLANKS: 'FILL_IN_BLANKS',
+        CODE_SELECT: 'CODE_SELECT',
+        ORDER_CODE: 'ORDER_CODE'
+      };
+
+      const INITIAL_EXERCISES = [
+        // LEVEL 1 - HTML
+        {
+          id: 'html_1_1',
+          language: ProgrammingLanguage.HTML,
+          level: 1,
+          title: 'A Estrutura Básica',
+          titleEn: 'The Basic Structure',
+          question: 'Qual tag HTML representa a raiz de um documento HTML?',
+          questionEn: 'Which HTML tag represents the root of an HTML document?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['<body>', '<head>', '<html>', '<doctype>'],
+          correctAnswer: '<html>',
+          explanation: 'A tag <html> é a raiz de todo documento HTML, encapsulando todo o conteúdo da página.',
+          explanationEn: 'The <html> tag is the root of any HTML document, encapsulating all index content.',
+          xpReward: 15
+        },
+        {
+          id: 'html_1_2',
+          language: ProgrammingLanguage.HTML,
+          level: 1,
+          title: 'Título Principal',
+          titleEn: 'Principal Header',
+          question: 'Como se define o título principal de maior importância em uma página HTML?',
+          questionEn: 'How do you define the most important main title on an HTML page?',
+          type: ExerciseType.FILL_IN_BLANKS,
+          options: ['h1', 'title', 'header', 'head'],
+          correctAnswer: 'h1',
+          explanation: 'A tag <h1> define o cabeçalho mais importante ou título de primeiro nível de uma página.',
+          explanationEn: 'The <h1> tag defines the highest-level heading or first-level title of a webpage.',
+          xpReward: 20
+        },
+        {
+          id: 'html_1_3',
+          language: ProgrammingLanguage.HTML,
+          level: 1,
+          title: 'Links e Páginas',
+          titleEn: 'Links and Targets',
+          question: 'Ordene os atributos para criar um link correto que abre em uma nova aba:',
+          questionEn: 'Order the attributes to build a valid link opening in a new browser tab:',
+          type: ExerciseType.ORDER_CODE,
+          options: ['href="https://google.com"', '<a', 'target="_blank"', '>Ir para o Google</a>'],
+          correctAnswer: '<a,href="https://google.com",target="_blank",>Ir para o Google</a>',
+          explanation: 'A estrutura de um hiperlink com abertura em nova aba usa <a href="..." target="_blank">texto</a>.',
+          explanationEn: 'An external hyperlink opening in a new tab requires: <a href="..." target="_blank">label</a>.',
+          xpReward: 25
+        },
+        // LEVEL 2 - HTML
+        {
+          id: 'html_2_1',
+          language: ProgrammingLanguage.HTML,
+          level: 2,
+          title: 'Tabelas Organizadoras',
+          titleEn: 'Organizer Tables',
+          question: 'Qual elemento é usado para definir uma linha em uma tabela HTML?',
+          questionEn: 'Which element defines a single row inside an HTML data table?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['<td>', '<tr>', '<th>', '<table>'],
+          correctAnswer: '<tr>',
+          explanation: 'A tag <tr> define uma Table Row (linha de tabela), enquanto <td> define a célula de dados.',
+          explanationEn: 'The <tr> tag defines a Table Row, whereas <td> provides row data cell values.',
+          xpReward: 20
+        },
+        {
+          id: 'html_2_2',
+          language: ProgrammingLanguage.HTML,
+          level: 2,
+          title: 'Semântica Moderna',
+          titleEn: 'Modern Semantic Tags',
+          question: 'Selecione a tag semântica correta para definir o rodapé de um site:',
+          questionEn: 'Select the semantic tag designed to outline footer sections:',
+          type: ExerciseType.CODE_SELECT,
+          options: ['<bottom>', '<end>', '<footer>', '<aside>'],
+          correctAnswer: '<footer>',
+          explanation: 'A tag semântica de rodapé do HTML5 é <footer>, usada para informações autorais ou de contato.',
+          explanationEn: 'The HTML5 semantic footer segment is designated by the <footer> tag.',
+          xpReward: 15
+        },
+        // LEVEL 1 - JAVASCRIPT
+        {
+          id: 'js_1_1',
+          language: ProgrammingLanguage.JAVASCRIPT,
+          level: 1,
+          title: 'Variáveis Modernas',
+          titleEn: 'Modern Variables',
+          question: 'Qual palavra-chave declara uma variável que não pode ser reatribuída?',
+          questionEn: 'Which keyword declares variables that cannot be reassigned?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['let', 'var', 'const', 'immutable'],
+          correctAnswer: 'const',
+          explanation: 'Variáveis declaradas com "const" criam uma referência constante que não pode ser alterada ou reatribuída.',
+          explanationEn: 'Variables declared via "const" block reference overwriting or reassignment properties.',
+          xpReward: 15
+        },
+        // LEVEL 2 - JAVASCRIPT
+        {
+          id: 'js_2_1',
+          language: ProgrammingLanguage.JAVASCRIPT,
+          level: 2,
+          title: 'Comparação Estrita',
+          titleEn: 'Strict Comparison',
+          question: 'Qual operador verifica o mesmo valor E o mesmo tipo em JavaScript?',
+          questionEn: 'Which operator verifies identical value AND same type properties in JS?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['==', '===', '=', '!='],
+          correctAnswer: '===',
+          explanation: 'O operador === compara valor e tipo sem fazer coerção automática de tipos em JavaScript.',
+          explanationEn: 'The structural === compares content and type without performing type coercions.',
+          xpReward: 20
+        },
+        {
+          id: 'js_2_2',
+          language: ProgrammingLanguage.JAVASCRIPT,
+          level: 2,
+          title: 'Arrow Functions',
+          titleEn: 'Arrow Functions',
+          question: 'Ordene as partes para criar uma Arrow Function que soma dois valores:',
+          questionEn: 'Rearrange the following snippets to form a functional add arrow function:',
+          type: ExerciseType.ORDER_CODE,
+          options: ['const soma = (a, b)', '=>', 'a + b;', ''],
+          correctAnswer: 'const soma = (a, b),=>,a + b;',
+          explanation: 'A sintaxe encurtada de arrow functions é feita com (parâmetros) => corpo_da_funcao.',
+          explanationEn: 'Shortened callback equations use the explicit (param) => statements pattern.',
+          xpReward: 25
+        },
+        // LEVEL 3 - JAVASCRIPT
+        {
+          id: 'js_3_1',
+          language: ProgrammingLanguage.JAVASCRIPT,
+          level: 3,
+          title: 'Manipulação de Arrays',
+          titleEn: 'Array Manipulation',
+          question: 'Qual método de array cria uma cópia modificada aplicando um filtro lógico?',
+          questionEn: 'Which array method builds a filtered copy matching logic conditions?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['map()', 'filter()', 'reduce()', 'forEach()'],
+          correctAnswer: 'filter()',
+          explanation: 'O método filter() cria um novo array contendo todos os itens aprovados em um escopo lógico.',
+          explanationEn: 'The filter() array manipulator compiles elements that passes specific conditions.',
+          xpReward: 22
+        },
+        // LEVEL 1 - PYTHON
+        {
+          id: 'py_1_1',
+          language: ProgrammingLanguage.PYTHON,
+          level: 1,
+          title: 'Impressão de Dados',
+          titleEn: 'Data Output',
+          question: 'Qual função do Python é utilizada para mostrar texto no terminal?',
+          questionEn: 'Which default python utility formats text blocks onto standard display outputs?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['console.log()', 'print()', 'echo()', 'output()'],
+          correctAnswer: 'print()',
+          explanation: 'A função nativa "print()" é usada para enviar dados para a saída do sistema (terminal).',
+          explanationEn: 'The primary terminal printer inside python environment is the print() function.',
+          xpReward: 15
+        },
+        {
+          id: 'py_1_2',
+          language: ProgrammingLanguage.PYTHON,
+          level: 1,
+          title: 'Indentação Significativa',
+          titleEn: 'Indentation Rules',
+          question: 'Como Python agrupa blocos de código (condicionais, funções)?',
+          questionEn: 'How are code blocks separated and integrated inside Python compiler layers?',
+          type: ExerciseType.MULTIPLE_CHOICE,
+          options: ['Com chaves {}', 'Com parênteses ()', 'Através de indentação / espaçamento', 'Através de ponto e vírgula ;'],
+          correctAnswer: 'Através de indentação / espaçamento',
+          explanation: 'Diferente de outras linguagens que usam chaves, Python depende de recuos de espaços em branco para estruturar seus blocos.',
+          explanationEn: 'Instead of curly braces, Python implements tabs indentation spaces to bundle block levels.',
+          xpReward: 18
+        },
+        // LEVEL 2 - PYTHON
+        {
+          id: 'py_2_1',
+          language: ProgrammingLanguage.PYTHON,
+          level: 2,
+          title: 'Listas em Python',
+          titleEn: 'Python Lists',
+          question: 'Como adicionamos um elemento ao final de uma lista chamada `lista`?',
+          questionEn: 'How is a new list item appended to an array called `lista` in python?',
+          type: ExerciseType.CODE_SELECT,
+          options: ['lista.add(item)', 'lista.append(item)', 'lista.push(item)', 'lista.insert(item)'],
+          correctAnswer: 'lista.append(item)',
+          explanation: 'O método `.append()` adiciona um único item ao fim de uma lista em Python.',
+          explanationEn: 'Appending single entities to a python list is solved via `.append(element).`',
+          xpReward: 20
+        },
+        // LEVEL 3 - PYTHON
+        {
+          id: 'py_3_1',
+          language: ProgrammingLanguage.PYTHON,
+          level: 3,
+          title: 'Dicionários de Chaves',
+          titleEn: 'Keyed Dictionaries',
+          question: 'Ordene o código para declarar um dicionário Python contendo name e age:',
+          questionEn: 'Order key-values properties to generate a valid Python Dictionary object:',
+          type: ExerciseType.ORDER_CODE,
+          options: ['usuario = {', '"name": "Alice",', '"age": 25', '}'],
+          correctAnswer: 'usuario = {,"name": "Alice",,"age": 25,}',
+          explanation: 'Dicionários são definidos com chaves contendo pares chave: valor separados por vírgulas.',
+          explanationEn: 'Dictionaries utilize structured curly-braces enclosing keys and value definitions.',
+          xpReward: 25
+        }
+      ];
+
+      const ACHIEVEMENTS = [
+        { id: 'first_steps', title: 'Primeiros Passos', titleEn: 'First Steps', description: 'Complete o primeiro exercício com sucesso!', descriptionEn: 'Complete your first exercise successfully!', icon: 'book-open', xpReward: 50 },
+        { id: 'code_master', title: 'Mestre do Código', titleEn: 'Code Master', description: 'Complete 10 exercícios da plataforma.', descriptionEn: 'Answer 10 interactive programming tasks!', icon: 'award', xpReward: 150 },
+        { id: 'daily_streak_3', title: 'Compromisso de Ferro', titleEn: 'Iron Streak', description: 'Mantenha ativa ofensiva por 3 dias seguidos.', descriptionEn: 'Maintain a 3-day active practice streak!', icon: 'flame', xpReward: 100 },
+        { id: 'combatant', title: 'Duelista Ágil', titleEn: 'Agile Duelist', description: 'Vença um combate de duelo na comunidade.', descriptionEn: 'Defeat a challenger bot query in Arena battle!', icon: 'zap', xpReward: 120 }
+      ];
+
+      const INITIAL_LEADERBOARD = [
+        { uid: 'anna_pro', displayName: 'AnnaDev (Mestre JS)', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Anna', level: 12, xp: 4200, gold: 800, streak: 14 },
+        { uid: 'marco_js_guru', displayName: 'Marco_JS', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Marco', level: 10, xp: 3850, gold: 670, streak: 9 },
+        { uid: 'python_guru', displayName: 'B_Python', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', level: 9, xp: 2900, gold: 500, streak: 5 }
+      ];
+
+      const INITIAL_FORUM_POSTS = [
+        {
+          id: 'thread_1',
+          title: 'Dúvida sobre indentação no Python',
+          content: 'Olá pessoal! Como manter o código Python limpo ao declarar loops aninhados com blocos if/else. Algum padrão ideal?',
+          authorName: 'Carlos Dev',
+          authorUid: 'python_guru',
+          authorLevel: 15,
+          language: ProgrammingLanguage.PYTHON,
+          createdAt: new Date().toISOString(),
+          likes: 12,
+          likedBy: [],
+          replies: [
+            {
+              id: 'reply_1',
+              content: 'Sempre utilize 4 espaços de identação para cada subnível! Evite misturar tabs e espaços.',
+              authorName: 'AnnaDev',
+              authorUid: 'anna_pro',
+              authorLevel: 18,
+              createdAt: new Date().toISOString(),
+              likes: 4,
+              likedBy: [],
+              isSolution: true
+            }
+          ]
+        },
+        {
+          id: 'thread_2',
+          title: 'Diferença estrita === vs == em JavaScript',
+          content: 'Qual a vantagem prática de proibir o uso de comparadores de igualdade fraca no meu linter?',
+          authorName: 'Mariana Costa',
+          authorUid: 'html_princess',
+          authorLevel: 8,
+          language: ProgrammingLanguage.JAVASCRIPT,
+          createdAt: new Date(Date.now() - 36000000).toISOString(),
+          likes: 7,
+          likedBy: [],
+          replies: []
+        }
+      ];
+
+      const INITIAL_CALENDAR_EVENTS = [
+        { id: 'event_1', title: 'Revisar Arrays e Dicionários', description: 'Revisão focada de Python.', date: '2026-06-15', time: '14:00', language: ProgrammingLanguage.PYTHON },
+        { id: 'event_2', title: 'Treinar Semântica HTML', description: 'Metas diárias de aprendizado.', date: '2026-06-18', time: '19:00', language: ProgrammingLanguage.HTML }
+      ];
+
+      // ==========================================
+      // TRANSLATIONS DICTIONARY FOR HIGH FIDELITY
+      // ==========================================
+      const TRANSLATIONS = {
+        pt: {
+          learn: 'ESTUDAR',
+          practice: 'DUELAR',
+          community: 'FÓRUM',
+          stats: 'DESEMPENHO',
+          shop: 'LOJA',
+          security: 'SEGURANÇA',
+          integrations: 'CONEXÕES',
+          streak: 'OFENSIVA DIÁRIA',
+          gems: 'DIAMANTES',
+          level: 'NÍVEL',
+          xp: 'EXPERIÊNCIA',
+          unlockedBadges: 'CONQUISTAS',
+          dailyStats: 'Análise Diária',
+          xpGained: 'XP Acumulado',
+          practiceTime: 'Prática Estimada',
+          leagueTitle: 'Liga Esmeralda',
+          remainingDays: 'DIA 3 DE 7',
+          friendChallenge: 'Desafio Rápido de Amigo',
+          friendChallengeDesc: 'Vença 2 combates de Regex para ganhar ouros.',
+          acceptChallenge: 'ACEITAR DESAFIO',
+          noHearts: 'Sem Corações! Vá à loja recarregar!',
+          refillHearts: 'Recarregar Saúde',
+          goldUnit: 'monetário',
+          saveProfile: 'Salvar Configurações',
+          githubTitle: 'Integração com GitHub',
+          githubDesc: 'Configure sincronização automatizada para importar logs.',
+          gitUserPlaceholder: 'Usuário GitHub',
+          syncBtn: 'Sincronizar Métricas',
+          calendarTitle: 'Lembretes & Cronogramas',
+          apiSecretTitle: 'Monitoramento & Chaves de API',
+          copyKey: 'Copiar Chave',
+          verificationPassed: 'Membro Autorizado',
+          biometricsTitle: 'Hardware de Biometria',
+          twoFaTitle: 'Chave de 2 Fatores Activa',
+          backupTitle: 'Backup na Nuvem Ativo',
+          exportIcs: 'EXPORTAR (.ICS)',
+          profileSettings: 'Perfil do Desenvolvedor',
+          userBio: 'Mini Biografia',
+          bioLabel: 'Biografia de Apresentação',
+          currentProgress: 'Caminho Atual',
+          resolvedLabel: 'RESOLVIDOS',
+          streakLabel: 'OFENSIVA',
+          trackProgress: 'Módulos Concluídos',
+          selectTrack: 'Selecione sua Trilha de Estudos',
+          correctAnswer: 'Correto!',
+          wrongAnswer: 'Alternativa incorreta, tente denovo!',
+          explanationLabel: 'Explicação:',
+          nextBtn: 'Próxima',
+          completeLesson: 'Parabéns! Aula concluída.',
+          congratsTitle: 'Aula Finalizada!',
+          congratsSubtitle: 'Seus dados de conquistas foram atualizados!',
+          spentGold: 'Adquirir corações',
+          spendPrompt: 'Restaurar 5 corações por 150 moedas',
+          refillSuccess: 'Saúde restaurada!',
+          notEnoughGold: 'Ouro insuficiente!'
+        },
+        en: {
+          learn: 'LEARN',
+          practice: 'DUEL',
+          community: 'COMMUNITY',
+          stats: 'STATS',
+          shop: 'REFILLS',
+          security: 'SECURITY',
+          integrations: 'SERVICE SYNC',
+          streak: 'STREAK DAYS',
+          gems: 'DIAMONDS',
+          level: 'LEVEL',
+          xp: 'XP SCORES',
+          unlockedBadges: 'BADGES',
+          dailyStats: 'Daily Analytics',
+          xpGained: 'XP Gained',
+          practiceTime: 'Practice Volume',
+          leagueTitle: 'Emerald Arena',
+          remainingDays: 'DAY 3 OF 7',
+          friendChallenge: 'Friend Arena Match',
+          friendChallengeDesc: 'Beat friends inside regex battle for gold rewards.',
+          acceptChallenge: 'ENGAGE BATTLE',
+          noHearts: 'Hearts depleted! Visit Refills store!',
+          refillHearts: 'Refill Heart Indicators',
+          goldUnit: 'coins',
+          saveProfile: 'Confirm Updates',
+          githubTitle: 'GitHub Sync Module',
+          githubDesc: 'Connect your developer metrics to estimate skills levels.',
+          gitUserPlaceholder: 'GitHub handle',
+          syncBtn: 'Fetch Metrics',
+          calendarTitle: 'Deadlines & Calendars',
+          apiSecretTitle: 'System Token API Key',
+          copyKey: 'Copy Token',
+          verificationPassed: 'Authorized Member',
+          biometricsTitle: 'Biometric Controls',
+          twoFaTitle: 'Two-Factor Token Installed',
+          backupTitle: 'Cloud Backups Active',
+          exportIcs: 'EXPORT (.ICS)',
+          profileSettings: 'Developer Identity',
+          userBio: 'Developer Biography',
+          bioLabel: 'Brief developer description',
+          currentProgress: 'Current Path',
+          resolvedLabel: 'RESOLVED',
+          streakLabel: 'STREAK',
+          trackProgress: 'Completed Modules',
+          selectTrack: 'Choose Target Language Track',
+          correctAnswer: 'Correct Answer!',
+          wrongAnswer: 'Incorrect answer, please try again!',
+          explanationLabel: 'Explanation Detail:',
+          nextBtn: 'Next Task',
+          completeLesson: 'Lesson completed successfully!',
+          congratsTitle: 'Unit Mastered!',
+          congratsSubtitle: 'Your stats and records have been synced!',
+          spentGold: 'Acquire hearts pack',
+          spendPrompt: 'Settle 5 heart shapes for 150 gold coins',
+          refillSuccess: 'Vital energy filled!',
+          notEnoughGold: 'Insufficient gold balance!'
+        }
+      };
+
+      // ==========================================
+      // WEB AUDIO SYNTH FOR SATISFYING SOUNDS
+      // ==========================================
+      const playSynthSound = (isSuccess) => {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          if (isSuccess) {
+            // High pitch ascending chord
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.25);
+          } else {
+            // Low pitch heavy buzzer
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.linearRampToValueAtTime(90, ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.35);
+          }
+        } catch (e) {
+          console.log('Audio disabled in sandboxed constraints:', e);
+        }
+      };
+
+      // ==========================================
+      // CUSTOM ICON COMPONENT UTILIZING LUCIDE
+      // ==========================================
+      const LucideIcon = ({ name, className = "w-4 h-4 text-zinc-400" }) => {
+        const iconRef = useRef(null);
+
+        useEffect(() => {
+          if (window.lucide && iconRef.current) {
+            window.lucide.createIcons({
+              nodeList: [iconRef.current]
+            });
+          }
+        }, [name]);
+
+        // Fallback names for safety to bypass Lucide camelCase to kebab-case differences
+        const kebabName = name
+          .replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2')
+          .toLowerCase();
+
+        return <i ref={iconRef} data-lucide={kebabName} className={className}></i>;
+      };
+
+      // ==========================================
+      // ROOT CODELINGO APP COMPONENT
+      // ==========================================
+      function App() {
+        // Core Statistics States synced from LocalStorage
+        const [stats, setStats] = useState(() => {
+          const saved = localStorage.getItem('codelingo_stats');
+          if (saved) {
+            try { return JSON.parse(saved); } catch (e) {}
+          }
+          return {
+            uid: 'student_developer',
+            displayName: 'Joao Dev',
+            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+            githubUsername: '',
+            level: 1,
+            xp: 45,
+            gold: 320,
+            hearts: 5,
+            streak: 3,
+            history: {
+              '2026-06-11': 12,
+              '2026-06-12': 18
+            },
+            unlockedAchievements: ['first_steps'],
+            completedExerciseIds: [],
+            xpGoal: 50,
+            minutesGoal: 15,
+            isBiometricEnabled: false,
+            is2faEnabled: false,
+            appLanguage: 'pt',
+            theme: 'dark',
+            apiKey: `dl_live_${Math.random().toString(36).substring(2, 17)}`
+          };
+        });
+
+        // Sync Stats to LocalStorage
+        useEffect(() => {
+          localStorage.setItem('codelingo_stats', JSON.stringify(stats));
+        }, [stats]);
+
+        const [activeTab, setActiveTab] = useState('learn');
+        const [selectedLang, setSelectedLang] = useState(ProgrammingLanguage.JAVASCRIPT);
+        const [toasts, setToasts] = useState([]);
+        const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+        // Active levels selected state
+        const [currentExerciseIdx, setCurrentExerciseIdx] = useState(0);
+        const [selectedOption, setSelectedOption] = useState('');
+        const [orderValue, setOrderValue] = useState([]);
+        const [fillBlankText, setFillBlankText] = useState('');
+        const [isAnswerChecked, setIsAnswerChecked] = useState(false);
+        const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+        const [activeChallengeLevel, setActiveChallengeLevel] = useState(null); // level number being studied
+        const [failedTries, setFailedTries] = useState(0);
+
+        // App Language shorthand
+        const lang = stats.appLanguage || 'pt';
+        const t = TRANSLATIONS[lang];
+
+        const triggerNotification = (text, title = 'System') => {
+          const id = Date.now();
+          setToasts(prev => [...prev, { id, text, title }]);
+          setTimeout(() => {
+            setToasts(prev => prev.filter(item => item.id !== id));
+          }, 4000);
+        };
+
+        // Utility to update user statistical parameters
+        const updateStats = (newVals) => {
+          setStats(prev => ({ ...prev, ...newVals }));
+        };
+
+        // Get matching exercises for selected progress track and active level
+        const currentTrackExercises = useMemo(() => {
+          return INITIAL_EXERCISES.filter(ex => ex.language === selectedLang);
+        }, [selectedLang]);
+
+        // Dynamic calculate percentage complete
+        const levelsCompletedCount = useMemo(() => {
+          const ids = currentTrackExercises.map(ex => ex.id);
+          const solved = stats.completedExerciseIds.filter(id => ids.includes(id));
+          return solved.length;
+        }, [currentTrackExercises, stats.completedExerciseIds]);
+
+        const trackPercentage = useMemo(() => {
+          if (currentTrackExercises.length === 0) return 0;
+          return Math.round((levelsCompletedCount / currentTrackExercises.length) * 100);
+        }, [levelsCompletedCount, currentTrackExercises]);
+
+        // Launch an exercise module
+        const startLevelChallenge = (lvlNumber) => {
+          if (stats.hearts <= 0) {
+            triggerNotification(t.noHearts, 'Alert');
+            setActiveTab('shop');
+            return;
+          }
+          // Filter exercises of this level
+          const exercisesOfLevel = currentTrackExercises.filter(ex => ex.level === lvlNumber);
+          if (exercisesOfLevel.length === 0) {
+            triggerNotification(lang === 'pt' ? 'Módulo em construção!' : 'Exercises under development!', 'Info');
+            return;
+          }
+          setActiveChallengeLevel(lvlNumber);
+          setCurrentExerciseIdx(0);
+          resetExerciseInputs();
+        };
+
+        const resetExerciseInputs = () => {
+          setSelectedOption('');
+          setOrderValue([]);
+          setFillBlankText('');
+          setIsAnswerChecked(false);
+          setIsAnswerCorrect(false);
+        };
+
+        // Solve answer handlers
+        const handleCheckAnswer = () => {
+          const activeExercises = currentTrackExercises.filter(ex => ex.level === activeChallengeLevel);
+          const ex = activeExercises[currentExerciseIdx];
+          
+          let validated = false;
+          if (ex.type === ExerciseType.MULTIPLE_CHOICE || ex.type === ExerciseType.CODE_SELECT) {
+            validated = (selectedOption === ex.correctAnswer);
+          } else if (ex.type === ExerciseType.FILL_IN_BLANKS) {
+            validated = (fillBlankText.trim().toLowerCase() === ex.correctAnswer.toLowerCase());
+          } else if (ex.type === ExerciseType.ORDER_CODE) {
+            const joinedResult = orderValue.join(',');
+            validated = (joinedResult === ex.correctAnswer);
+          }
+
+          setIsAnswerChecked(true);
+          setIsAnswerCorrect(validated);
+          playSynthSound(validated);
+
+          if (validated) {
+            // Reward XP and gold
+            const newXp = stats.xp + ex.xpReward;
+            const newGold = stats.gold + Math.ceil(ex.xpReward / 2);
+            let updatedCompletedIds = [...stats.completedExerciseIds];
+            if (!updatedCompletedIds.includes(ex.id)) {
+              updatedCompletedIds.push(ex.id);
+            }
+
+            // Achievement unlocking scan
+            let newBadges = [...stats.unlockedAchievements];
+            if (updatedCompletedIds.length >= 1 && !newBadges.includes('first_steps')) {
+              newBadges.push('first_steps');
+              triggerNotification(lang === 'pt' ? 'Desbloqueou: Primeiros Passos!' : 'Unlocked Bonus: First Steps!', 'Achievement');
+            }
+            if (updatedCompletedIds.length >= 10 && !newBadges.includes('code_master')) {
+              newBadges.push('code_master');
+              triggerNotification('Achievement Unlocked: Code Master!', 'Badge');
+            }
+
+            // Estimate Level formula (Every 100 XP unlocks next level)
+            const resolvedLevel = Math.floor(newXp / 100) + 1;
+
+            updateStats({
+              xp: newXp,
+              gold: newGold,
+              completedExerciseIds: updatedCompletedIds,
+              unlockedAchievements: newBadges,
+              level: resolvedLevel
+            });
+          } else {
+            // Deduct heart
+            const currentHearts = Math.max(0, stats.hearts - 1);
+            updateStats({ hearts: currentHearts });
+            if (currentHearts <= 0) {
+              triggerNotification(t.noHearts, 'Warning');
+            }
+          }
+        };
+
+        const handleNextExercise = () => {
+          const activeExercises = currentTrackExercises.filter(ex => ex.level === activeChallengeLevel);
+          if (currentExerciseIdx + 1 < activeExercises.length) {
+            setCurrentExerciseIdx(prev => prev + 1);
+            resetExerciseInputs();
+          } else {
+            // Finished level!
+            setActiveChallengeLevel(null);
+            triggerNotification(t.completeLesson, t.congratsTitle);
+          }
+        };
+
+        // Spending Gold Coins for refilling Health hearts
+        const handleRefillHearts = () => {
+          if (stats.gold >= 150) {
+            updateStats({
+              gold: stats.gold - 150,
+              hearts: 5
+            });
+            triggerNotification(t.refillSuccess, 'Refill Shop');
+          } else {
+            triggerNotification(t.notEnoughGold, 'Error');
+          }
+        };
+
+        // Dynamic chart points calculations
+        const practiceHistoryMinutes = useMemo(() => {
+          return Object.values(stats.history).reduce((a, b) => a + b, 0);
+        }, [stats.history]);
+
+        return (
+          <div className="flex flex-col min-h-screen text-zinc-100 select-none max-w-7xl mx-auto border-x border-white/5 bg-[#050505]">
+            
+            {/* TOAST SYSTEM CONTAINER */}
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none">
+              {toasts.map(toast => (
+                <div key={toast.id} className="p-4 bg-zinc-900 border-l-4 border-cyan-400 text-zinc-200 rounded-lg shadow-2xl flex flex-col pointer-events-auto animate-slide-up max-w-xs transition-all">
+                  <span className="text-[10px] uppercase font-bold text-cyan-400 tracking-wider font-mono">{toast.title}</span>
+                  <p className="text-xs font-semibold mt-1">{toast.text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* TOP NAVIGATION BAR */}
+            <nav className="h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-8 bg-[#0a0a0a] shrink-0 sticky top-0 z-40">
+              <div className="flex items-center gap-4">
+                <span className="md:hidden text-zinc-400 hover:text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                  <LucideIcon name="menu" className="w-6 h-6" />
+                </span>
+                
+                <h1 className="text-xl md:text-2xl font-black tracking-tight text-white flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('learn')}>
+                  <div className="w-8 h-8 bg-cyan-400 rounded-lg flex items-center justify-center text-black font-black text-sm shadow-[0_0_15px_rgba(6,182,212,0.4)]">C</div>
+                  <span className="hidden sm:inline">CODELINGO</span>
+                </h1>
+                
+                <div className="h-6 w-[1px] bg-white/20 hidden md:inline"></div>
+                
+                {/* Horizontal Navbar Tabs */}
+                <div className="hidden md:flex items-center gap-5 text-xs font-bold tracking-wider">
+                  <span onClick={() => { setActiveTab('learn'); setActiveChallengeLevel(null); }} className={`cursor-pointer transition-colors ${activeTab === 'learn' ? 'text-cyan-400 border-b-2 border-cyan-400 py-5' : 'text-white/50 hover:text-white'}`}>{t.learn}</span>
+                  <span onClick={() => setActiveTab('duels')} className={`cursor-pointer transition-colors ${activeTab === 'duels' ? 'text-cyan-400 border-b-2 border-cyan-400 py-5' : 'text-white/50 hover:text-white'}`}>{t.practice}</span>
+                  <span onClick={() => setActiveTab('forum')} className={`cursor-pointer transition-colors ${activeTab === 'forum' ? 'text-cyan-400 border-b-2 border-cyan-400 py-5' : 'text-white/50 hover:text-white'}`}>{t.community}</span>
+                  <span onClick={() => setActiveTab('shop')} className={`cursor-pointer transition-colors ${activeTab === 'shop' ? 'text-cyan-400 border-b-2 border-cyan-400 py-5' : 'text-white/50 hover:text-white'}`}>{t.shop}</span>
+                  <span onClick={() => setActiveTab('stats')} className={`cursor-pointer transition-colors ${activeTab === 'stats' ? 'text-cyan-400 border-b-2 border-cyan-400 py-5' : 'text-white/50 hover:text-white'}`}>{t.stats}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 sm:gap-4 text-xs">
+                {/* Hearts Counter */}
+                <div className="flex items-center gap-1.5 bg-zinc-900 border border-white/5 px-2.5 py-1.5 rounded-full select-none">
+                  <LucideIcon name="heart" className="w-3.5 h-3.5 text-rose-500 fill-current animate-pulse" />
+                  <span className="font-bold font-mono text-zinc-100">{stats.hearts}</span>
+                </div>
+
+                {/* Day streak value */}
+                <div className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1.5 rounded-full select-none text-orange-400">
+                  <span className="text-sm">🔥</span>
+                  <span className="font-bold font-mono">{stats.streak}D</span>
+                </div>
+                
+                {/* Diamonds balance */}
+                <div className="flex items-center gap-1.5 bg-cyan-400/10 border border-cyan-400/20 px-2.5 py-1.5 rounded-full select-none text-cyan-400">
+                  <span className="text-sm">💎</span>
+                  <span className="font-bold font-mono">{stats.gold}</span>
+                </div>
+
+                {/* Quick Language Toggle */}
+                <button 
+                  onClick={() => updateStats({ appLanguage: lang === 'pt' ? 'en' : 'pt' })}
+                  className="bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-full text-[10px] font-black tracking-widest cursor-pointer select-none"
+                >
+                  {lang === 'pt' ? 'PT' : 'EN'}
+                </button>
+                
+                {/* Simple user profile link */}
+                <div 
+                  onClick={() => setActiveTab('security')}
+                  className="w-8 h-8 rounded-full border-2 border-cyan-400/40 p-0.5 cursor-pointer active:scale-95 transition-transform"
+                  title="Profile settings"
+                >
+                  <img src={stats.avatarUrl} className="rounded-full bg-white/5" alt="user profile" />
+                </div>
+              </div>
+            </nav>
+
+            {/* MOBILE MENU LIST */}
+            {isMobileMenuOpen && (
+              <div className="md:hidden flex flex-col border-b border-white/10 bg-zinc-950 p-4 gap-3 text-sm font-bold tracking-wider animate-slide-up">
+                <span onClick={() => { setActiveTab('learn'); setActiveChallengeLevel(null); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'learn' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.learn}</span>
+                <span onClick={() => { setActiveTab('duels'); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'duels' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.practice}</span>
+                <span onClick={() => { setActiveTab('forum'); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'forum' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.community}</span>
+                <span onClick={() => { setActiveTab('shop'); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'shop' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.shop}</span>
+                <span onClick={() => { setActiveTab('stats'); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'stats' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.stats}</span>
+                <span onClick={() => { setActiveTab('security'); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'security' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.security}</span>
+                <span onClick={() => { setActiveTab('integrations'); setIsMobileMenuOpen(false); }} className={`p-2 rounded ${activeTab === 'integrations' ? 'text-cyan-400 bg-white/5' : 'text-white/60'}`}>{t.integrations}</span>
+              </div>
+            )}
+
+            {/* MAIN APP BODY SPLIT (Multi-column dashboard matching mockup layout) */}
+            <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
+              
+              {/* ======================================================== */}
+              {/* LEFT SIDEBAR: CURRENT LEVERAGE, ACTIVITY HUES, BADGES  */}
+              {/* ======================================================== */}
+              <aside className="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-white/10 bg-[#080808] p-5 flex flex-col gap-5 shrink-0">
+                
+                {/* 1. Track Selector & Path */}
+                <div>
+                  <h2 className="font-serif text-sm italic text-white/90 mb-2">{t.currentProgress}</h2>
+                  <div className="space-y-2">
+                    <div className="p-3.5 bg-cyan-400/5 border border-cyan-400/20 rounded-xl relative overflow-hidden">
+                      <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest mb-1">LEVEL {stats.level}</p>
+                      <p className="text-xs font-semibold text-white font-mono">{selectedLang} Architect</p>
+                      <div className="w-full bg-white/10 h-1 mt-3.5 rounded-full overflow-hidden">
+                        <div className="bg-cyan-400 h-full shadow-[0_0_8px_#22d3ee]" style={{ width: `${Math.min(100, Math.max(10, stats.xp % 100))}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shortcut to secondary settings tabs */}
+                <div className="space-y-1">
+                  <button 
+                    onClick={() => setActiveTab('security')}
+                    className={`w-full py-2 px-3 text-left rounded-lg text-xs font-bold font-mono transition-colors flex items-center gap-2 ${activeTab === 'security' ? 'bg-cyan-400/10 text-cyan-400' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+                  >
+                    <LucideIcon name="lock" className="w-3.5 h-3.5" />
+                    {t.security}
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('integrations')}
+                    className={`w-full py-2 px-3 text-left rounded-lg text-xs font-bold font-mono transition-colors flex items-center gap-2 ${activeTab === 'integrations' ? 'bg-cyan-400/10 text-cyan-400' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+                  >
+                    <LucideIcon name="link" className="w-3.5 h-3.5" />
+                    {t.integrations}
+                  </button>
+                </div>
+
+                {/* 2. Commit Heatmap Simulation block */}
+                <div className="flex-1 flex flex-col gap-3">
+                  <h2 className="font-serif text-sm italic text-white/90">{lang === 'pt' ? 'Histórico Ativo' : 'Commit Grid'}</h2>
+                  <div className="bg-white/5 rounded-xl p-3 border border-white/5 text-[10px] font-mono space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-white/40">{t.resolvedLabel}:</span>
+                      <span className="text-cyan-400 font-black">{stats.completedExerciseIds.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/40">{t.streakLabel}:</span>
+                      <span className="text-orange-400 font-black">🔥 {stats.streak}d</span>
+                    </div>
+                    <div className="pt-2.5 border-t border-white/10 flex gap-1.5 justify-center">
+                      <div className="w-2.5 h-2.5 bg-zinc-800 rounded-sm"></div>
+                      <div className="w-2.5 h-2.5 bg-cyan-950 rounded-sm"></div>
+                      <div className="w-2.5 h-2.5 bg-cyan-700/50 rounded-sm"></div>
+                      <div className="w-2.5 h-2.5 bg-cyan-500 rounded-sm shadow-[0_0_4px_rgba(6,182,212,0.8)] animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Static New Achievements banner */}
+                <div className="mt-auto p-3.5 bg-cyan-950/40 border border-cyan-500/20 rounded-xl flex items-center gap-3">
+                  <div className="text-xl">🏆</div>
+                  <div>
+                    <p className="text-[9px] font-bold text-cyan-300 uppercase tracking-wide">Developer Badge</p>
+                    <p className="text-xs text-white/90 font-bold">{stats.unlockedAchievements.length} {t.unlockedBadges}</p>
+                  </div>
+                </div>
+              </aside>
+
+              {/* ======================================================== */}
+              {/* MAIN PORT PANE: DYNAMIC CODE MODULE RENDER              */}
+              {/* ======================================================== */}
+              <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full">
+                
+                {activeChallengeLevel === null ? (
+                  // ==========================================
+                  // TAB LEARN (THE PROGRESS NODE MAP)
+                  // ==========================================
+                  activeTab === 'learn' ? (
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      {/* 1. Selecting language Track selector bar */}
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 shadow-lg">
+                        <h2 className="text-lg font-serif italic text-white/90 mb-4">{t.selectTrack}</h2>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {[ProgrammingLanguage.HTML, ProgrammingLanguage.JAVASCRIPT, ProgrammingLanguage.PYTHON].map(track => {
+                            const active = (selectedLang === track);
+                            return (
+                              <button
+                                key={track}
+                                onClick={() => setSelectedLang(track)}
+                                className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all relative cursor-pointer ${active ? 'bg-cyan-500/15 border-cyan-500 text-cyan-400 font-bold shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'bg-white/5 border-white/5 text-zinc-400 hover:text-white'}`}
+                              >
+                                <span className="text-xs font-mono mb-2 uppercase">{track}</span>
+                                <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-cyan-400 h-full" style={{ width: `${track === selectedLang ? trackPercentage : 15}%` }} />
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* 2. Interactive tree layout */}
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg text-center relative overflow-hidden">
+                        <div className="absolute top-4 left-4 text-xs font-serif italic text-white/20">Active Unit: Map Nodes</div>
+                        
+                        <div className="flex flex-col items-center gap-10 py-12">
+                          {/* Node Level 1 */}
+                          <div 
+                            onClick={() => startLevelChallenge(1)}
+                            className="w-16 h-16 rounded-full bg-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.45)] flex items-center justify-center border-4 border-white/20 ring-4 ring-cyan-500/20 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                            title="Nivel 1: Basics"
+                          >
+                            <span className="text-xl text-black font-black">★</span>
+                          </div>
+
+                          <div className="h-6 w-0.5 bg-gradient-to-b from-cyan-400 to-zinc-800"></div>
+
+                          {/* Node Level 2 */}
+                          <div className="flex gap-14">
+                            <div 
+                              onClick={() => startLevelChallenge(2)}
+                              className="w-14 h-14 rounded-full bg-zinc-900 border-2 border-cyan-500/50 flex items-center justify-center text-cyan-400 font-black cursor-pointer hover:scale-105 ring-2 ring-cyan-500/15"
+                              title="Nivel 2: Intermediate"
+                            >
+                              II
+                            </div>
+                            
+                            {/* Disabled/Locked Node Level 3 */}
+                            <div 
+                              onClick={() => startLevelChallenge(3)}
+                              className="w-14 h-14 rounded-full bg-zinc-900 border-2 border-white/5 flex items-center justify-center text-zinc-600 font-bold select-none cursor-pointer"
+                              title="Nivel 3: Advanced"
+                            >
+                              III
+                            </div>
+                          </div>
+
+                          <div className="h-6 w-0.5 bg-zinc-800"></div>
+
+                          {/* Locked indicators */}
+                          <div className="flex gap-4">
+                            <div className="w-10 h-10 rounded-full bg-zinc-950 border border-white/5 flex items-center justify-center text-xs opacity-40">🔒</div>
+                            <div className="w-10 h-10 rounded-full bg-zinc-950 border border-white/5 flex items-center justify-center text-xs opacity-40">🔒</div>
+                          </div>
+                        </div>
+
+                        {/* Banner controls */}
+                        <div className="pt-2">
+                          <button 
+                            onClick={() => startLevelChallenge(1)}
+                            className="px-6 py-2.5 bg-cyan-400 hover:bg-cyan-300 font-black text-black text-xs rounded-full cursor-pointer hover:scale-105 transition-all shadow-[0_0_20px_#06b6d4]"
+                          >
+                            START NEW LESSON
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTab === 'duels' ? (
+                    // ==========================================
+                    // TAB DUELS (INTERACTIVE PRACTICE COMBAT)
+                    // ==========================================
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl">⚡</span>
+                          <h3 className="font-serif text-lg italic text-white/90">Cyber Code Arena</h3>
+                        </div>
+                        <p className="text-xs text-zinc-400 mb-6">Instantly engage inside automated programmer practice exercises against live challenger robots.</p>
+
+                        <div className="space-y-3">
+                          <div className="p-4 bg-zinc-900 border border-white/10 rounded-xl flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Marco" className="w-8 h-8 rounded-full bg-white/5" />
+                              <div>
+                                <h4 className="text-xs font-bold font-mono">Marco (Senior JS)</h4>
+                                <p className="text-[10px] text-zinc-500">Practice track: JavaScript</p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                startLevelChallenge(2);
+                                triggerNotification(lang==='pt' ? 'Iniciando Duelo de JS! Responda o questionário sem falhar!' : 'Starting JS duel battle: Solve level 2 perfectly!', 'Duel');
+                              }}
+                              className="px-3.5 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-[10px] rounded-lg cursor-pointer"
+                            >
+                              DUELAR
+                            </button>
+                          </div>
+
+                          <div className="p-4 bg-zinc-900 border border-white/10 rounded-xl flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Robot" className="w-8 h-8 rounded-full bg-white/5" />
+                              <div>
+                                <h4 className="text-xs font-bold font-mono">CodyBot_9000</h4>
+                                <p className="text-[10px] text-zinc-500">Practice track: HTML Basics</p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                startLevelChallenge(1);
+                                triggerNotification(lang==='pt' ? 'Iniciando Duelo contra Bot!' : 'Duel against AI Bot started: Complete tasks carefully!', 'Arena');
+                              }}
+                              className="px-3.5 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-[10px] rounded-lg cursor-pointer"
+                            >
+                              CHALLENGE
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTab === 'forum' ? (
+                    // ==========================================
+                    // TAB COMMUNITY (FORUM THREAD DISCUSSIONS)
+                    // ==========================================
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg">
+                        <h3 className="font-serif text-lg italic text-white/90 mb-4">{lang === 'pt' ? 'Discussões da Comunidade' : 'Developer Community forums'}</h3>
+                        
+                        {/* Feed Posts lists */}
+                        <div className="space-y-4">
+                          {INITIAL_FORUM_POSTS.map(post => (
+                            <div key={post.id} className="p-4 bg-zinc-900/60 border border-white/5 rounded-xl space-y-3">
+                              <div className="flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center font-black text-[9px]">{post.authorName[0]}</div>
+                                  <span className="font-bold text-zinc-300">{post.authorName}</span>
+                                </div>
+                                <span className="text-[9px] font-mono bg-cyan-400/10 text-cyan-400 font-bold px-2 py-0.5 rounded">{post.language}</span>
+                              </div>
+                              <h4 className="text-xs font-bold text-white">{post.title}</h4>
+                              <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">{post.content}</p>
+                              
+                              {post.replies.length > 0 && (
+                                <div className="pl-3.5 border-l-2 border-cyan-400/40 space-y-2 mt-2">
+                                  {post.replies.map(rep => (
+                                    <div key={rep.id} className="text-[10px] space-y-1">
+                                      <div className="text-cyan-300 font-semibold">{rep.authorName}:</div>
+                                      <p className="text-zinc-400 font-mono italic">{rep.content}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTab === 'shop' ? (
+                    // ==========================================
+                    // TAB SHOP (RECYCLED CORAÇÕES)
+                    // ==========================================
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 shadow-lg text-center space-y-6">
+                        <div className="flex justify-center">
+                          <span className="text-6xl animate-pulse">❤️</span>
+                        </div>
+                        <div>
+                          <h3 className="font-serif text-xl italic text-white">{t.refillHearts}</h3>
+                          <p className="text-xs text-zinc-400 mt-2">{t.spendPrompt}</p>
+                        </div>
+                        <div className="p-4 bg-zinc-900 border border-white/5 rounded-xl border-dashed inline-block">
+                          <p className="text-xs font-mono">Current funds: <span className="text-cyan-400 font-black">💎 {stats.gold}</span></p>
+                        </div>
+                        <div>
+                          <button 
+                            onClick={handleRefillHearts}
+                            className="px-8 py-3 bg-cyan-400 hover:bg-cyan-300 font-black text-black text-xs rounded-full cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                          >
+                            RECHARGE HEALTH
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTab === 'stats' ? (
+                    // ==========================================
+                    // TAB DESEMPENHO (XP TREND GRAPH COMPONENT)
+                    // ==========================================
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 shadow-lg space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-serif text-lg italic text-white/90">{t.dailyStats}</h3>
+                          <div className="flex gap-2">
+                            {/* PDF Printable */}
+                            <button 
+                              onClick={() => window.print()}
+                              className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 text-white rounded text-[10px] font-black tracking-wider cursor-pointer font-mono"
+                            >
+                              PRINT REPORT
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Interactive Range controls to adjust milestones */}
+                        <div className="grid grid-cols-2 gap-4 pt-2">
+                          <div className="bg-zinc-900 p-3.5 border border-white/5 rounded-xl">
+                            <label className="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-2">Target XP: {stats.xpGoal}XP</label>
+                            <input 
+                              type="range" 
+                              min="10" 
+                              max="150" 
+                              step="5"
+                              value={stats.xpGoal}
+                              onChange={(e) => updateStats({ xpGoal: Number(e.target.value) })}
+                              className="w-full accent-cyan-400" 
+                            />
+                          </div>
+
+                          <div className="bg-zinc-900 p-3.5 border border-white/5 rounded-xl">
+                            <label className="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-2">Practice Goal: {stats.minutesGoal}M</label>
+                            <input 
+                              type="range" 
+                              min="5" 
+                              max="60" 
+                              step="5"
+                              value={stats.minutesGoal}
+                              onChange={(e) => updateStats({ minutesGoal: Number(e.target.value) })}
+                              className="w-full accent-cyan-400" 
+                            />
+                          </div>
+                        </div>
+
+                        {/* Custom SVG Practice minutes Area chart representation */}
+                        <div className="pt-4">
+                          <p className="text-[10px] text-zinc-500 font-bold mb-3 uppercase tracking-wider">Estimated studied volume trend</p>
+                          <div className="w-full h-36 bg-zinc-950 border border-white/5 rounded-xl p-3 flex flex-wrap relative">
+                            {/* Smooth Custom SVG Graph */}
+                            <svg className="w-full h-full overflow-visible" viewBox="0 0 400 100">
+                              {/* Horizontal target dashed green goal marker line */}
+                              <line x1="0" y1="50" x2="400" y2="50" stroke="#10b981" strokeWidth="1" strokeDasharray="3,3" />
+                              
+                              {/* Dynamic wave paths */}
+                              <path 
+                                d="M0,80 Q70,40 140,85 T280,30 T400,60" 
+                                fill="none" 
+                                stroke="#06b6d4" 
+                                strokeWidth="2.5" 
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-[9px] text-zinc-500 italic block text-center mt-2 font-mono">Dashed line models target milestone of ({stats.minutesGoal} mins) practiced weekly.</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTab === 'security' ? (
+                    // ==========================================
+                    // TAB SECURITY (2FA AND BIOMETRICS HARDWARE)
+                    // ==========================================
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg space-y-4">
+                        <div className="flex items-center gap-2">
+                          <LucideIcon name="lock" className="w-5 h-5 text-cyan-400" />
+                          <h3 className="font-serif text-lg italic text-white/90">{t.profileSettings}</h3>
+                        </div>
+
+                        {/* Text fields */}
+                        <div className="space-y-3 pt-2">
+                          <div>
+                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Display Username</label>
+                            <input 
+                              type="text"
+                              value={stats.displayName}
+                              onChange={(e) => updateStats({ displayName: e.target.value })}
+                              className="w-full p-2.5 text-xs bg-zinc-900 border border-white/10 rounded-lg text-white font-mono focus:outline-none"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Theme (Override)</label>
+                              <select 
+                                value={stats.theme} 
+                                onChange={(e) => updateStats({ theme: e.target.value })}
+                                className="w-full p-2.5 text-xs bg-zinc-900 border border-white/10 rounded-lg text-white"
+                              >
+                                <option value="dark">Sophisticated Dark</option>
+                                <option value="light">Classic Light</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">App Language</label>
+                              <select 
+                                value={stats.appLanguage} 
+                                onChange={(e) => updateStats({ appLanguage: e.target.value })}
+                                className="w-full p-2.5 text-xs bg-zinc-900 border border-white/10 rounded-lg text-white"
+                              >
+                                <option value="pt">Português (BR)</option>
+                                <option value="en">English (US)</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Interactive toggle simulator elements */}
+                        <div className="pt-2 divide-y divide-white/5">
+                          <div className="flex justify-between items-center py-3">
+                            <div>
+                              <h4 className="text-xs font-bold font-mono">Simulation: {t.biometricsTitle}</h4>
+                              <p className="text-[10px] text-zinc-500">Lock high profile exercises using TouchID</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                updateStats({ isBiometricEnabled: !stats.isBiometricEnabled });
+                                triggerNotification('Simulated biometric state changed!', 'Biometrics');
+                              }}
+                              className={`px-3 py-1 text-[10px] uppercase font-black rounded ${stats.isBiometricEnabled ? 'bg-cyan-500 text-black shadow-[0_0_10px_#22d3ee]' : 'bg-white/10 text-zinc-400'}`}
+                            >
+                              {stats.isBiometricEnabled ? 'ACTIVE' : 'DEACTIVATED'}
+                            </button>
+                          </div>
+
+                          <div className="flex justify-between items-center py-3">
+                            <div>
+                              <h4 className="text-xs font-bold font-mono">Simulation: {t.twoFaTitle}</h4>
+                              <p className="text-[10px] text-zinc-500">Enable TOTP Temporal OTP Security codes</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                updateStats({ is2faEnabled: !stats.is2faEnabled });
+                                triggerNotification('Two-factor credentials parsed!', '2FA Verification');
+                              }}
+                              className={`px-3 py-1 text-[10px] uppercase font-black rounded ${stats.is2faEnabled ? 'bg-cyan-500 text-black shadow-[0_0_10px_#22d3ee]' : 'bg-white/10 text-zinc-400'}`}
+                            >
+                              {stats.is2faEnabled ? 'ENFORCED' : 'OFF'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTab === 'integrations' ? (
+                    // ==========================================
+                    // TAB CONEXÕES (ICS & CALENDAR LOGS, GITHUB)
+                    // ==========================================
+                    <div className="space-y-6 max-w-xl mx-auto animate-slide-up">
+                      
+                      {/* GitHub integration container */}
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg space-y-4">
+                        <div className="flex items-center gap-2">
+                          <LucideIcon name="github" className="w-5 h-5 text-white" />
+                          <h3 className="font-serif text-lg italic text-white/90">{t.githubTitle}</h3>
+                        </div>
+                        <p className="text-xs text-zinc-400">{t.githubDesc}</p>
+
+                        <div className="flex gap-2.5">
+                          <input 
+                            type="text" 
+                            placeholder={t.gitUserPlaceholder}
+                            value={stats.githubUsername}
+                            onChange={(e) => updateStats({ githubUsername: e.target.value })}
+                            className="flex-1 p-2.5 text-xs bg-zinc-900 border border-white/10 rounded-lg text-white font-mono focus:outline-none"
+                          />
+                          <button 
+                            onClick={async () => {
+                              if (!stats.githubUsername) return;
+                              triggerNotification('Connecting to external public GitHub api node...', 'Async fetch');
+                              try {
+                                const resp = await fetch(`https://api.github.com/users/${stats.githubUsername}`);
+                                if (resp.ok) {
+                                  const d = await resp.ok ? await resp.json() : null;
+                                  triggerNotification(`Successfully Synced Profile! followers: ${d?.followers}`, 'GitHub OK');
+                                } else {
+                                  throw new Error('Not found');
+                                }
+                              } catch (e) {
+                                // gracefully fall back
+                                triggerNotification('Sincronia Offline de Teste completada.', 'Local Cache Settle');
+                              }
+                            }}
+                            className="px-4 py-2 bg-white text-black text-xs font-bold rounded-lg hover:scale-105 active:scale-95 transition-transform"
+                          >
+                            {t.syncBtn}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Dynamic ICS Event calendar exporter */}
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-serif text-md italic text-white/90">{t.calendarTitle}</h3>
+                          <button 
+                            onClick={() => {
+                              // ICS File exporter
+                              let content = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Codelingo Standalone//HE\r\n";
+                              INITIAL_CALENDAR_EVENTS.forEach(ev => {
+                                content += "BEGIN:VEVENT\r\n";
+                                content += `SUMMARY:${ev.title}\r\n`;
+                                content += `DTSTART:${ev.date.replace(/-/g, '')}T180000Z\r\n`;
+                                content += `DESCRIPTION:${ev.description}\r\n`;
+                                content += "END:VEVENT\r\n";
+                              });
+                              content += "END:VCALENDAR";
+                              const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+                              const url = URL.createObjectURL(blob);
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.setAttribute('download', 'codelingo_deadlines.ics');
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              triggerNotification('Calendar boundaries compiled to codelingo_deadlines.ics!', 'ICS Exporter');
+                            }}
+                            className="text-[10px] bg-cyan-400/10 hover:bg-cyan-400/20 text-cyan-400 font-extrabold px-3 py-1.5 rounded border border-cyan-400/20 cursor-pointer font-mono"
+                          >
+                            {t.exportIcs}
+                          </button>
+                        </div>
+
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                          {INITIAL_CALENDAR_EVENTS.map(ev => (
+                            <div key={ev.id} className="p-3 bg-zinc-900 border border-white/5 rounded-xl flex justify-between items-center">
+                              <div>
+                                <h4 className="text-xs font-bold text-white">{ev.title}</h4>
+                                <p className="text-[9px] text-zinc-500 font-mono mt-0.5">{ev.date} @ {ev.time} • {ev.language}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* API sandbox credentials */}
+                      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-lg space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold font-mono text-zinc-400 uppercase tracking-widest">{t.apiSecretTitle}</span>
+                        </div>
+                        <div className="flex items-center bg-zinc-950 p-2.5 rounded-lg border border-white/5">
+                          <code className="text-[10px] font-mono text-cyan-400 select-all flex-1">{stats.apiKey}</code>
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(stats.apiKey);
+                              triggerNotification('Copied developer token to Clipboard!', 'Key Sandbox');
+                            }}
+                            className="ml-2 px-2.5 py-1 bg-white/5 text-white text-[9px] font-black tracking-wider rounded"
+                          >
+                            {t.copyKey}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
+                ) : (
+                  // ==========================================
+                  // ACTIVE EXERCISE TASK VIEW RENDERER (THE MODAL INTEGRATION)
+                  // ==========================================
+                  (() => {
+                    const activeExercises = currentTrackExercises.filter(ex => ex.level === activeChallengeLevel);
+                    const currentEx = activeExercises[currentExerciseIdx];
+                    if (!currentEx) return null;
+
+                    return (
+                      <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-cyan-500/30 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden animate-slide-up">
+                        {/* Interactive decorative progress indicators */}
+                        <div className="flex justify-between items-center text-xs text-zinc-400 mb-6 border-b border-white/5 pb-4">
+                          <button 
+                            onClick={() => setActiveChallengeLevel(null)}
+                            className="p-1 text-zinc-500 hover:text-white"
+                          >
+                            ✕ {lang === 'pt' ? 'SAIR' : 'CLOSE'}
+                          </button>
+                          <span className="font-mono font-bold tracking-widest uppercase">
+                            {currentEx.language} - {lang === 'pt' ? 'Questão' : 'Question'} {currentExerciseIdx + 1} / {activeExercises.length}
+                          </span>
+                          <span className="text-cyan-400 font-bold font-mono">+{currentEx.xpReward} XP</span>
+                        </div>
+
+                        {/* Title & Prompt */}
+                        <div className="space-y-4 mb-6">
+                          <div className="text-xs font-bold text-cyan-400 uppercase tracking-widest font-mono">
+                            {lang === 'pt' ? currentEx.title : (currentEx.titleEn || currentEx.title)}
+                          </div>
+                          <h3 className="text-base sm:text-lg font-serif italic text-white leading-relaxed">
+                            {lang === 'pt' ? currentEx.question : (currentEx.questionEn || currentEx.question)}
+                          </h3>
+                        </div>
+
+                        {/* ==================== RENDERS SPECIFIC QUESTION TYPES ==================== */}
+                        <div className="space-y-3.5 mb-8">
+                          {/* TYPE 1: MULTIPLE CHOICE OR CODE SELECT */}
+                          {(currentEx.type === ExerciseType.MULTIPLE_CHOICE || currentEx.type === ExerciseType.CODE_SELECT) && (
+                            <div className="grid grid-cols-1 gap-2.5">
+                              {currentEx.options.map(option => {
+                                const selected = (selectedOption === option);
+                                return (
+                                  <button
+                                    key={option}
+                                    onClick={() => !isAnswerChecked && setSelectedOption(option)}
+                                    disabled={isAnswerChecked}
+                                    className={`p-4 rounded-xl border text-left font-mono text-xs transition-all cursor-pointer ${selected ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' : 'border-white/5 bg-white/5 hover:bg-white/10 text-zinc-300'}`}
+                                  >
+                                    {option}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* TYPE 2: FILL IN BLANKS */}
+                          {currentEx.type === ExerciseType.FILL_IN_BLANKS && (
+                            <div className="space-y-2">
+                              <input
+                                type="text"
+                                disabled={isAnswerChecked}
+                                placeholder="Digite a resposta correta..."
+                                value={fillBlankText}
+                                onChange={(e) => setFillBlankText(e.target.value)}
+                                className="w-full p-4 bg-zinc-950 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-cyan-400"
+                              />
+                              <div className="flex gap-2 flex-wrap pt-2">
+                                <span className="text-[10px] text-zinc-500 font-mono self-center">Suggestions:</span>
+                                {currentEx.options.map(opt => (
+                                  <button 
+                                    key={opt}
+                                    onClick={() => !isAnswerChecked && setFillBlankText(opt)} 
+                                    className="bg-zinc-900 border border-white/5 font-mono text-[10px] px-2.5 py-1 rounded text-zinc-400 hover:text-white"
+                                  >
+                                    {opt}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* TYPE 3: ORDER CODE BLOCKS */}
+                          {currentEx.type === ExerciseType.ORDER_CODE && (
+                            <div className="space-y-4">
+                              {/* Selection pool */}
+                              <div className="p-3 bg-zinc-950 rounded-xl border border-white/5 min-h-12 flex flex-wrap gap-2 items-center">
+                                {orderValue.map((chunk, idx) => (
+                                  <span 
+                                    key={idx} 
+                                    onClick={() => !isAnswerChecked && setOrderValue(prev => prev.filter(c => c !== chunk))}
+                                    className="bg-cyan-400/20 text-cyan-400 font-mono text-xs p-2 rounded border border-cyan-400/30 cursor-pointer hover:bg-red-950/20 hover:text-red-400"
+                                  >
+                                    {chunk}
+                                  </span>
+                                ))}
+                              </div>
+                              {/* Option pool components */}
+                              <div className="flex flex-wrap gap-2">
+                                {currentEx.options.map(option => {
+                                  const selectedInOrder = orderValue.includes(option);
+                                  if (selectedInOrder || !option) return null;
+                                  return (
+                                    <button
+                                      key={option}
+                                      onClick={() => !isAnswerChecked && setOrderValue(prev => [...prev, option])}
+                                      className="p-2 border border-white/5 bg-white/5 hover:bg-white/10 font-mono text-xs rounded text-zinc-300"
+                                    >
+                                      {option}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* SUCCESS OR FAIL BANNER RENDERS */}
+                        {isAnswerChecked && (
+                          <div className={`p-4 rounded-xl border mb-6 animate-slide-up ${isAnswerCorrect ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-red-500/10 border-red-500/30 text-red-300'}`}>
+                            <div className="flex items-center gap-2 mb-2 font-black text-xs font-mono">
+                              <span>{isAnswerCorrect ? '✓' : '✗'}</span>
+                              <span>{isAnswerCorrect ? t.correctAnswer : t.wrongAnswer}</span>
+                            </div>
+                            <p className="text-[11px] leading-relaxed">
+                              <span className="font-extrabold">{t.explanationLabel}</span> {lang === 'pt' ? currentEx.explanation : (currentEx.explanationEn || currentEx.explanation)}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* SUBMIT TRIGGERS */}
+                        <div className="flex justify-end gap-3.5">
+                          {!isAnswerChecked ? (
+                            <button
+                              onClick={handleCheckAnswer}
+                              disabled={
+                                (currentEx.type === ExerciseType.MULTIPLE_CHOICE || currentEx.type === ExerciseType.CODE_SELECT) ? !selectedOption :
+                                (currentEx.type === ExerciseType.FILL_IN_BLANKS) ? !fillBlankText.trim() :
+                                (currentEx.type === ExerciseType.ORDER_CODE) ? orderValue.length === 0 : false
+                              }
+                              className="px-6 py-3 scroll-px-6 bg-cyan-400 disabled:opacity-40 text-black font-extrabold text-xs rounded-xl cursor-default disabled:cursor-not-allowed hover:bg-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all"
+                            >
+                              VERIFICAR
+                            </button>
+                          ) : (
+                            <button
+                              onClick={handleNextExercise}
+                              className="px-6 py-3 scroll-px-6 bg-cyan-400 text-black font-extrabold text-xs rounded-xl cursor-pointer hover:bg-cyan-300 hover:scale-105 transition-transform"
+                            >
+                              {t.nextBtn}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()
+                )}
+              </main>
+
+              {/* ======================================================== */}
+              {/* RIGHT SIDEBAR: DAILY SCORES & LEAGUE STANDINGS MODULE   */}
+              {/* ======================================================== */}
+              <aside className="w-full lg:w-72 border-t lg:border-t-0 lg:border-l border-white/10 bg-[#080808] p-5 flex flex-col gap-6 shrink-0">
+                
+                {/* 1. Daily Study Statistics */}
+                <div>
+                  <h2 className="font-serif text-sm italic text-white/90 mb-3">{t.dailyStats}</h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                      <p className="text-[9px] text-white/40 uppercase font-black font-mono">{t.xpGained}</p>
+                      <p className="text-md font-bold text-white mt-1">+{practiceHistoryMinutes * 15} XP</p>
+                    </div>
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                      <p className="text-[9px] text-white/40 uppercase font-black font-mono">{t.practiceTime}</p>
+                      <p className="text-md font-bold text-white mt-1">{practiceHistoryMinutes} m</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Emerald Leaderboard League list */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="font-serif text-sm italic text-white/95">{t.leagueTitle}</h2>
+                    <span className="text-[8px] bg-cyan-400/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-400/30 font-extrabold font-mono">{t.remainingDays}</span>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    {INITIAL_LEADERBOARD.map((user, idx) => (
+                      <div key={user.uid} className="flex items-center gap-3 p-2 bg-white/5 border border-white/5 rounded-xl text-xs">
+                        <span className="w-4 font-extrabold font-mono text-cyan-400">{idx + 1}</span>
+                        <img src={user.avatarUrl} className="w-7 h-7 rounded-full bg-white/5" />
+                        <span className="flex-1 font-semibold truncate text-zinc-300 font-mono">{user.displayName}</span>
+                        <span className="font-bold text-zinc-100 font-mono text-[10px]">{user.xp} XP</span>
+                      </div>
+                    ))}
+
+                    {/* Active logged user item */}
+                    <div className="flex items-center gap-3 p-2.5 bg-cyan-400/10 border border-cyan-400/30 rounded-xl text-xs shadow-[0_0_12px_rgba(6,182,212,0.1)]">
+                      <span className="w-4 font-black font-mono text-cyan-400">4</span>
+                      <img src={stats.avatarUrl} className="w-7 h-7 rounded-full bg-white/5" />
+                      <span className="flex-1 font-black truncate text-white font-mono">{stats.displayName} (Me)</span>
+                      <span className="font-black text-cyan-400 font-mono text-[10px]">{stats.xp} XP</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Promotional static Friend challenge panel */}
+                <div className="mt-auto friend-promo">
+                  <div className="bg-gradient-to-br from-cyan-950/40 to-black p-4 rounded-xl border border-cyan-500/20 space-y-2">
+                    <p className="text-[10px] font-bold text-cyan-300 uppercase tracking-widest">{t.friendChallenge}</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex -space-x-2">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Anna" className="w-5 h-5 rounded-full ring-2 ring-zinc-950" />
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Marco" className="w-5 h-5 rounded-full ring-2 ring-zinc-950" />
+                      </div>
+                      <span className="text-[10px] text-zinc-400 font-bold font-mono">{t.friendChallengeDesc}</span>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setActiveTab('duels');
+                        triggerNotification('Redirected to the Duel Arena!', 'Game Challenge');
+                      }}
+                      className="w-full py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black text-[10px] font-black tracking-wider rounded transition-all cursor-pointer"
+                    >
+                      {t.acceptChallenge}
+                    </button>
+                  </div>
+                </div>
+              </aside>
+            </div>
+            
+            {/* RESET PROGRESS / RESET BUTTON FOOTER FOR DEVELOPERS */}
+            <footer className="h-10 border-t border-white/5 flex items-center justify-between px-4 text-[9px] font-mono text-zinc-500 bg-black/40 shrink-0">
+              <span>Codelingo © 2026 Sandbox • Active Build: Standalone HTML 5</span>
+              <button 
+                onClick={() => {
+                  if (confirm(lang==='pt'?'Deseja apagar o progresso do LocalStorage ?':'Are you sure you want to reset LocalStorage cache progress?')) {
+                    localStorage.removeItem('codelingo_stats');
+                    window.location.reload();
+                  }
+                }}
+                className="hover:text-red-400 cursor-pointer transition-colors"
+              >
+                [ RESET ALL PROGRESS ]
+              </button>
+            </footer>
+          </div>
+        );
+      }
+
+      // ==========================================
+      // START THE APP BOOTSTRAP OVER REGULAR DOM
+      // ==========================================
+      const container = document.getElementById('root');
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    </script>
   </body>
 </html>
-
